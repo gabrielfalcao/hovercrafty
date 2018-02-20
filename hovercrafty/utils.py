@@ -32,3 +32,8 @@ def unique_ordered_tuple(iterable):
         raise TypeError('unique_ordered_tuple() does not accept a string-type, got: {}'.format(iterable))
 
     return tuple(sorted(set(iterable)))
+
+
+def parse_query_string_ordered(string):
+    result = OrderedDict()
+    return result

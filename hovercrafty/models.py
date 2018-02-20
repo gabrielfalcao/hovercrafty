@@ -3,6 +3,7 @@ import re
 from collections import OrderedDict
 from .exceptions import RouteAlreadyDefined
 from utils import parse_destination
+from utils import parse_query_string_ordered
 from utils import unique_ordered_tuple
 
 PROTOCOL_HOSTNAME_ROUTES_SERVERS = OrderedDict()  # e.g.: "http://hostname.com"  # no trailing slash
@@ -72,3 +73,19 @@ class RouteDefinition(object):
 
         self.routes = OrderedDict()
         self.methods = sorted(set(methods))
+
+
+class HttpRequest(object):
+    def __init__(self, url, headers=None, query_params=None, query_string=None):
+        self.url = url
+        self.headers = OrderedDict(headers or [])
+        self.params = OrderedDict(query_params or [])
+        self.params.update(parse_query_string_ordered(query_params))
+
+
+class HttpResponse(object):
+    def __init__(self, body, status=200, headers=None, params=None):
+        self.body = body
+        self.status = status
+        self.headers = OrderedDict(headers or [])
+        self.params = OrderedDict(query or [])

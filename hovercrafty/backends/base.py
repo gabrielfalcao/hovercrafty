@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from hovercrafty.models import HttpRequest
-from hovercrafty.backends.base import Backend
 
 
-class HoverflyBackend(Backend):
+class Backend(object):
     def translate_request(self, request, route):
         """
         :param request: a :py:class:`hovercrafty.models.HttpRequest` instance
