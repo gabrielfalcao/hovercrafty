@@ -13,17 +13,18 @@ PROTOCOL_HOSTNAME_METHODS_ROUTES_SERVERS = OrderedDict()  # e.g.: ("http://hostn
 
 
 class RouteServer(object):
-    def __init__(self, destination):
+    def __init__(self, destination, protocols=None):
         info = parse_destination(destination)
         self.destination = destination
-        self.protocol = info.pop('protocol')
+        self.protocol = info.get('protocol')
         self.schema = "{protocol}://".format(**info)
         self.hostname = info.pop('hostname')
         self.routes = OrderedDict()
+        self.protocols = unique_ordered_tuple(protocols or [] + [self.protocol])
 
-    def route(self, pattern, methods, overwrite=False, fail=True):
+    def route(self, pattern, methods=None, overwrite=False, fail=True):
         # TODO: in docstring suggest using safe if you want to log overwrites instead of raising
-        methods = unique_ordered_tuple(methods)
+        methods = unique_ordered_tuple(methods or ['GET'])
 
         route = self.get_route_defintion(pattern, methods)
 
@@ -48,8 +49,12 @@ class RouteServer(object):
 
     def register_route_by_key(self, key, **route_params):
         force_overwrite = route_params.pop('overwrite', False)
+        is_safe = route_params.pop('safe', False)
         existent_definition = self.get_route_defintion(**route_params)
         if not force_overwrite and existent_definition:
+            if is_safe:
+                self.logger.warning('replacing existing route {}'.format(existent_definition))
+
             raise RouteAlreadyDefined(existent_definition)
 
         self.routes[key] = self.create_route_defintion(**route_params)
