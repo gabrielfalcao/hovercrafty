@@ -14,10 +14,21 @@ Extensible Application DSL for Hoverfly, WSGI and any other backend
    :target: https://gitter.im/newstore/hovercrafty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
-What is Hovercrafty ?
----------------------
+Motivation
+----------
 
-Hovercrafty is a python library that leverages a single API to define http request handlers, then run them as a hoverfly middleware, flask application or WSGI container
+Hovercrafty is a python library that leverages a single API to define
+http request handlers, then run them as a hoverfly middleware, flask
+application or WSGI container.
+
+
+It was designed by NewStore Inc. to increase productivity of
+developers who need to create and painlessly manage multiple hoverfly
+mock servers that can react dinamically to different data input.  of
+logic.
+
+
+
 
 Install
 -------
