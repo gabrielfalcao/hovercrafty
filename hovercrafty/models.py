@@ -6,6 +6,7 @@ from .utils import parse_destination
 from .utils import parse_query_string_ordered
 from .utils import split_hostname_and_path
 from .utils import unique_ordered_tuple
+from .utils import validate_type
 
 PROTOCOL_HOSTNAME_ROUTES_SERVERS = OrderedDict()  # e.g.: "http://hostname.com"  # no trailing slash
 HOSTNAME_ONLY_ROUTES_SERVERS = OrderedDict()  # e.g.: "hostname.com"
@@ -60,7 +61,7 @@ class RouteServer(object):
         existing = self.routes.get(key)
         return existing
 
-    def register_route(self, pattern, handler, methods, fail=False, overwrite=False, **route_params):
+    def register_route(self, pattern, handler, methods, fail=True, overwrite=False, **route_params):
         is_safe = not fail
         existent_definition = self.get_route_defintion(pattern, methods)
         if not overwrite and existent_definition:
@@ -80,17 +81,15 @@ class RouteServer(object):
 
 
 class RouteDefinition(object):
-    def __init__(self, parent, handler, pattern, methods=['GET'], protocols=['http']):
-        if not isinstance(parent, RouteServer):
-            msg = (
-                'RouteDefinition() takes a RouteServer instance as '
-                'first argument, but got {} {}.'
-            )
-            raise TypeError(msg.format(parent, type(parent)))
+    def __init__(self, parent, handler, pattern, methods=['GET'], protocols=None):
+        validate_type('RouteDefinition', RouteServer, parent)
+
         self.handler_callable = handler
         self.server = parent
         self.hostname = parent.hostname
         self.pattern = pattern
+        self.endpoint = handler.__name__
+        self.protocols = unique_ordered_tuple(protocols or parent.protocols)
         try:
             self.regex = re.compile(pattern)
         except re.error:
@@ -98,9 +97,10 @@ class RouteDefinition(object):
 
         self.routes = OrderedDict()
         self.methods = sorted(set(methods))
+        self.handler = handler
 
     def __repr__(self):
-        return r'<RouteDefinition({self.parent}, {self.handler}, {self.pattern}, {self.methods, {self.protocols})>'.format(self=self)
+        return r'<RouteDefinition({self.server}, {self.handler}, {self.pattern}, {self.methods}, {self.protocols})>'.format(self=self)
 
 
 class HttpRequest(object):

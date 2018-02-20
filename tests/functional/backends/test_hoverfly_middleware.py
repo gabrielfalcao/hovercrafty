@@ -40,8 +40,8 @@ def test_hoverfly_synthesize():
     input_stream.seek(0)
 
     HoverflyBackend(time_jsontest_synthesize).middleware(
-        source=input_stream,
-        destination=output_stream,
+        input_stream=input_stream,
+        output_stream=output_stream,
         codecs=[JSONStreamCodec, UnicodeStreamCodec]
     )
 

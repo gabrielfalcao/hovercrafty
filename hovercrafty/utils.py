@@ -4,6 +4,7 @@ import six
 import urllib
 from collections import OrderedDict
 
+
 destination_pattern = re.compile(r'((?P<protocol>[^:]+)[:])?(//)?(?P<hostname>.*?])[/]*$')
 DEFAULT_PROTOCOL = 'http'
 DEFAULT_HOSTNAME = None
@@ -43,3 +44,11 @@ def parse_query_string_ordered(string):
 def split_hostname_and_path(string):
     info = urllib.urlparse(string)
     return info.hostname, info.path
+
+
+def validate_type(callable_name, Type, value):
+    if not isinstance(value, Type):
+        module = Type.__module__
+        value_type = type(value)
+        msg = '{callable_name}() takes a {module} as argument, got {value} {value_type}'
+        raise TypeError(msg.format(**locals()))

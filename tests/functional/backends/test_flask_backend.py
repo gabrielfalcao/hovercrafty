@@ -17,14 +17,14 @@ TIME_DATA = OrderedDict([
     ("date", "02-20-2018"),
 ])
 
-TIME_JSON = json.dumps(TIME_DATA)
+TIME_JSON = bytes(json.dumps(TIME_DATA), 'utf-8')
 
 
 def get_rules_from_flask_app(app):
     return list(map(lambda r: r.rule, app.url_map.iter_rules()))
 
 
-@time_jsontest.route('/')
+@time_jsontest.route('/', methods=['GET'])
 def index_synthesize_time_json(request):
     return TIME_JSON
 
@@ -34,35 +34,35 @@ def foobar(request):
     return json.dumps({'foo': 'bar'})
 
 
-# def test_flask_register_route_side_effect():
-#     "FlaskBackend(server).register_routes_into(app) should be have the side-effect of registering routes in an existing Flask application instance"
+def test_flask_register_route_side_effect():
+    "FlaskBackend(server).register_routes_into(app) should be have the side-effect of registering routes in an existing Flask application instance"
 
-#     app = FlaskApplication('test_flask_register_route_side_effect')
+    app = FlaskApplication('test_flask_register_route_side_effect')
 
-#     FlaskBackend(time_jsontest).register_routes_into(app)
+    FlaskBackend(time_jsontest).register_routes_into(app)
 
-#     rules = get_rules_from_flask_app(app)
-#     rules.should.have.length_of(3)
-#     rules.should.equal(['/', '/foobar'])
+    rules = get_rules_from_flask_app(app)
+    rules.should.have.length_of(3)
+    rules.should.equal(['/foobar', '/', '/static/<path:filename>'])
 
-#     client = app.test_client()
+    client = app.test_client()
 
-#     client.get('/').data.should.equal(TIME_JSON)
-#     client.get('/foobar').data.should.equal('{"foo": "bar"}')
-#     client.post('/foobar').data.should.equal('{"foo": "bar"}')
+    client.get('/').data.should.equal(TIME_JSON)
+    client.get('/foobar').data.should.equal(b'{"foo": "bar"}')
+    client.post('/foobar').data.should.equal(b'{"foo": "bar"}')
 
 
-# def test_create_flask_application():
-#     "FlaskBackend(server).create_application(*args, **kw) should create a new Flask() instance with pre-mapped routes"
+def test_create_flask_application():
+    "FlaskBackend(server).create_application(*args, **kw) should create a new Flask() instance with pre-mapped routes"
 
-#     app = FlaskBackend(time_jsontest).create_application('test_create_flask_application')
+    app = FlaskBackend(time_jsontest).create_application('test_create_flask_application')
 
-#     rules = get_rules_from_flask_app(app)
-#     rules.should.have.length_of(2)
-#     rules.should.equal(['/', '/foobar'])
+    rules = get_rules_from_flask_app(app)
+    rules.should.have.length_of(2)
+    rules.should.equal(['/foobar', '/', '/static/<path:filename>'])
 
-#     client = app.test_client()
+    client = app.test_client()
 
-#     client.get('/').data.should.equal(TIME_JSON)
-#     client.get('/foobar').data.should.equal('{"foo": "bar"}')
-#     client.post('/foobar').data.should.equal('{"foo": "bar"}')
+    client.get('/').data.should.equal(TIME_JSON)
+    client.get('/foobar').data.should.equal(b'{"foo": "bar"}')
+    client.post('/foobar').data.should.equal(b'{"foo": "bar"}')

@@ -2,8 +2,12 @@
 
 
 class Backend(object):
-    def __init__(self, *args, **kw):
-        raise NotImplementedError
+    def __init__(self, route_server, *args, **kw):
+        self.server = route_server
+        self.initialize(*args, **kw)
+
+    def initialize(self, *args, **kw):
+        pass
 
     def translate_request(self, request, route):
         raise NotImplementedError

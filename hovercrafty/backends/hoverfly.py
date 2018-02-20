@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from hovercrafty.models import HttpRequest
 from hovercrafty.backends.base import Backend
+from hovercrafty.codecs import JSONStreamCodec
+from hovercrafty.codecs import UnicodeStreamCodec
 
 
 class HoverflyBackend(Backend):
@@ -37,3 +39,6 @@ class HoverflyBackend(Backend):
 
     def calculate_exact_querystring(self, request, response):
         return response.get_querystring()
+
+    def middleware(self, input_stream, output_stream, codecs=(JSONStreamCodec, UnicodeStreamCodec)):
+        pass

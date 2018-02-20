@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-
+from hovercrafty.http import request
 from hovercrafty.models import HttpRequest
+from hovercrafty.utils import validate_type
+
 from hovercrafty.backends.base import Backend
 
 
-class FlaskBackend(Backend):
+class WSGIBackend(Backend):
     def __init__(self, route_server):
         self.server = route_server
+
+
+class FlaskBackend(WSGIBackend):
 
     def translate_request(self, request, route):
         """
         :param request: a :py:class:`hovercrafty.models.HttpRequest` instance
         """
+        validate_type('FlaskBackend.translate_request', HttpRequest, request)
 
         response = self.process_request(request, route)
         result = {
@@ -44,7 +50,14 @@ class FlaskBackend(Backend):
         return response.get_querystring()
 
     def register_routes_into(self, flask_app):
+        for route in self.server.routes.values():
+            flask_app.add_url_rule(
+                route.pattern,
+                route.endpoint,
+                view_func=lambda *args, **kw: route.handler(request, *args, **kw)
+            )
         return flask_app
 
     def create_application(self, *args, **kw):
-        return self.register_routes_into(Flask(*args, **kw))
+        app = Flask(*args, **kw)
+        return self.register_routes_into(app)
