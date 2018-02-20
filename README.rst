@@ -41,7 +41,7 @@ Install
 Documentation
 -------------
 
-`hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_ - **(just kidding, this is a placeholder for our real documentation)**
+`hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_ - **(just kidding, this is a placeholder topic for a future real url)**
 
 
 Basic Usage
