@@ -144,3 +144,27 @@ With Flask
        backend.process_from_handler()
 
    app.run(port=8500)
+
+
+As WSGI server
+^^^^^^^^^^^^^^
+
+**Compatible with any WSGI-compatible application (e.g.: werkzeug, Django, ...)**
+
+.. code:: python
+
+   import json
+   from werkzeug.wrappers import Request, Response
+   from hovercrafty.backends.wsgi import WSGIBackend
+
+
+   backend = WSGIBackend(time_jsontest)
+
+   def application(environ, start_response):
+       start_response('200 OK', [('Content-Type', 'application/json')])
+       return [json.dumps({'hello': 'world'})]
+
+
+   if __name__ == '__main__':
+       from werkzeug.serving import run_simple
+       run_simple('localhost', 8500, backend.handle_wsgi(application))
