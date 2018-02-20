@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from hovercrafty.models import HttpRequest
 
 
 class Backend(object):
+    def __init__(self, *args, **kw):
+        raise NotImplementedError
+
     def translate_request(self, request, route):
         raise NotImplementedError
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import six
+import urllib
 from collections import OrderedDict
 
 destination_pattern = re.compile(r'((?P<protocol>[^:]+)[:])?(//)?(?P<hostname>.*?])[/]*$')
@@ -37,3 +38,8 @@ def unique_ordered_tuple(iterable):
 def parse_query_string_ordered(string):
     result = OrderedDict()
     return result
+
+
+def split_hostname_and_path(string):
+    info = urllib.urlparse(string)
+    return info.hostname, info.path

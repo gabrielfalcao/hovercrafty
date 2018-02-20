@@ -27,8 +27,8 @@ def index_synthesize_time_json(request):
 
 def test_hoverfly_synthesize():
     "HoverflyBackend(server).middleware() should source from a file-like object"
-    input_stream = io.BytesIO()
-    output_stream = io.BytesIO()
+    input_stream = io.StringIO()
+    output_stream = io.StringIO()
 
     input_stream.write(json.dumps(
         OrderedDict([
