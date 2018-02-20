@@ -18,7 +18,7 @@ class RouteServer(object):
     def __init__(self, destination, protocols=None, routes=None):
         info = parse_destination(destination)
         self.destination = destination
-        self.protocol = info.get('protocol')
+        self.protocol = info.get('protocol') or (protocols and protocols[0])
         self.schema = "{protocol}://".format(**info)
         self.hostname = info.pop('hostname')
         self.routes = OrderedDict(routes or [])
@@ -64,7 +64,7 @@ class RouteServer(object):
     def register_route(self, pattern, handler, methods, fail=True, overwrite=False, **route_params):
         is_safe = not fail
         existent_definition = self.get_route_defintion(pattern, methods)
-        if not overwrite and existent_definition:
+        if existent_definition and not overwrite:
             if is_safe:
                 self.logger.warning('replacing existing route {}'.format(existent_definition))
                 return existent_definition

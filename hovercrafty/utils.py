@@ -33,7 +33,7 @@ def unique_ordered_tuple(iterable):
     if isinstance(iterable, six.string_types):
         raise TypeError('unique_ordered_tuple() does not accept a string-type, got: {}'.format(iterable))
 
-    return tuple(sorted(set(iterable)))
+    return tuple(iterable)
 
 
 def parse_query_string_ordered(string):

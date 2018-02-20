@@ -8,7 +8,8 @@ from hovercrafty import RouteServer
 
 from hovercrafty.backends.wsgi import FlaskBackend
 
-time_jsontest = RouteServer('time.jsontest.com', protocols=['http'])
+
+router = RouteServer('http://time.jsontest.com')
 
 
 TIME_DATA = OrderedDict([
@@ -17,19 +18,17 @@ TIME_DATA = OrderedDict([
     ("date", "02-20-2018"),
 ])
 
-TIME_JSON = bytes(json.dumps(TIME_DATA), 'utf-8')
-
 
 def get_rules_from_flask_app(app):
-    return list(map(lambda r: r.rule, app.url_map.iter_rules()))
+    return [r.rule for r in app.url_map.iter_rules()]
 
 
-@time_jsontest.route('/', methods=['GET'])
-def index_synthesize_time_json(request):
-    return TIME_JSON
+@router.route('/')
+def index(request):
+    return json.dumps(TIME_DATA)
 
 
-@time_jsontest.route('/foobar', methods=['POST', 'GET'])
+@router.route('/foo/bar', methods=['POST', 'GET'])
 def foobar(request):
     return json.dumps({'foo': 'bar'})
 
@@ -39,30 +38,30 @@ def test_flask_register_route_side_effect():
 
     app = FlaskApplication('test_flask_register_route_side_effect')
 
-    FlaskBackend(time_jsontest).register_routes_into(app)
-
-    rules = get_rules_from_flask_app(app)
-    rules.should.have.length_of(3)
-    rules.should.equal(['/foobar', '/', '/static/<path:filename>'])
+    FlaskBackend(router).register_routes_into(app)
 
     client = app.test_client()
 
-    client.get('/').data.should.equal(TIME_JSON)
-    client.get('/foobar').data.should.equal(b'{"foo": "bar"}')
-    client.post('/foobar').data.should.equal(b'{"foo": "bar"}')
+    client.get('/').data.should.equal(json.dumps(TIME_DATA))
+    client.get('/foo/bar').data.should.equal(b'{"foo": "bar"}')
+    client.post('/foo/bar').data.should.equal(b'{"foo": "bar"}')
+
+    rules = get_rules_from_flask_app(app)
+    rules.should.have.length_of(3)
+    rules.should.equal(['/foo/bar', '/', '/static/<path:filename>'])
 
 
 def test_create_flask_application():
     "FlaskBackend(server).create_application(*args, **kw) should create a new Flask() instance with pre-mapped routes"
 
-    app = FlaskBackend(time_jsontest).create_application('test_create_flask_application')
-
-    rules = get_rules_from_flask_app(app)
-    rules.should.have.length_of(2)
-    rules.should.equal(['/foobar', '/', '/static/<path:filename>'])
+    app = FlaskBackend(router).create_application('test_create_flask_application')
 
     client = app.test_client()
 
-    client.get('/').data.should.equal(TIME_JSON)
-    client.get('/foobar').data.should.equal(b'{"foo": "bar"}')
-    client.post('/foobar').data.should.equal(b'{"foo": "bar"}')
+    client.get('/').data.should.equal(json.dumps(TIME_DATA))
+    client.get('/foo/bar').data.should.equal(b'{"foo": "bar"}')
+    client.post('/foo/bar').data.should.equal(b'{"foo": "bar"}')
+
+    rules = get_rules_from_flask_app(app)
+    rules.should.have.length_of(3)
+    rules.should.equal(['/foo/bar', '/', '/static/<path:filename>'])

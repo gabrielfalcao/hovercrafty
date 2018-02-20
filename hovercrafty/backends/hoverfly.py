@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from hovercrafty.models import HttpRequest
-from hovercrafty.backends.base import Backend
 from hovercrafty.codecs import JSONStreamCodec
 from hovercrafty.codecs import UnicodeStreamCodec
+
+# from hovercrafty.models import HttpRequest
+from hovercrafty.backends.base import Backend
 
 
 class HoverflyBackend(Backend):
@@ -13,25 +14,25 @@ class HoverflyBackend(Backend):
 
         response = self.process_request(request, route)
         result = {
-	    "path": {
-		"exactMatch": route.pattern,
-	    },
-	    "method": {
-		"exactMatch": request.method,
-	    },
-	    "destination": {
-		"exactMatch": route.server.hostname,
-	    },
-	    "scheme": {
-		"exactMatch": "http"
-	    },
-	    "query": {
-		"exactMatch": route.calculate_exact_querystring(request, response)
-	    },
-	    "body": {
-		"exactMatch": route.calculate_exact_body(request, response)
-	    }
-	}
+            "path": {
+                "exactMatch": route.pattern,
+            },
+            "method": {
+                "exactMatch": request.method,
+            },
+            "destination": {
+                "exactMatch": route.server.hostname,
+            },
+            "scheme": {
+                "exactMatch": "http",
+            },
+            "query": {
+                "exactMatch": route.calculate_exact_querystring(request, response)
+            },
+            "body": {
+                "exactMatch": route.calculate_exact_body(request, response)
+            }
+        }
         return result
 
     def calculate_exact_body(self, request, response):

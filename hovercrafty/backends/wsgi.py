@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+
+from collections import OrderedDict
+from copy import deepcopy
 from flask import Flask
 from hovercrafty.http import request
-from hovercrafty.models import HttpRequest
+# from hovercrafty.models import HttpRequest
+from hovercrafty.models import RouteServer
 from hovercrafty.utils import validate_type
 
 from hovercrafty.backends.base import Backend
@@ -9,53 +13,24 @@ from hovercrafty.backends.base import Backend
 
 class WSGIBackend(Backend):
     def __init__(self, route_server):
+        validate_type(self.__class__.__name__, RouteServer, route_server)
         self.server = route_server
 
 
 class FlaskBackend(WSGIBackend):
+    def register_routes_into(self, flask_app, **rule_params):
+        for (rule, methods), route in self.server.routes.items():
+            params = OrderedDict(deepcopy(rule_params))
+            handler = deepcopy(route.handler)
+            view_func = lambda *args, **kw: handler(request, *args, **kw)
+            params['rule'] = route.pattern
+            params['endpoint'] = route.endpoint
+            params['methods'] = route.methods
+            params['view_func'] = view_func
+            params['strict_slashes'] = True
 
-    def translate_request(self, request, route):
-        """
-        :param request: a :py:class:`hovercrafty.models.HttpRequest` instance
-        """
-        validate_type('FlaskBackend.translate_request', HttpRequest, request)
+            flask_app.add_url_rule(**params)
 
-        response = self.process_request(request, route)
-        result = {
-	    "path": {
-		"exactMatch": route.pattern,
-	    },
-	    "method": {
-		"exactMatch": request.method,
-	    },
-	    "destination": {
-		"exactMatch": route.server.hostname,
-	    },
-	    "scheme": {
-		"exactMatch": "http",
-	    },
-	    "query": {
-		"exactMatch": route.calculate_exact_querystring(request, response),
-	    },
-	    "body": {
-		"exactMatch": route.calculate_exact_body(request, response),
-	    }
-	}
-        return result
-
-    def calculate_exact_body(self, request, response):
-        return response.as_string()
-
-    def calculate_exact_querystring(self, request, response):
-        return response.get_querystring()
-
-    def register_routes_into(self, flask_app):
-        for route in self.server.routes.values():
-            flask_app.add_url_rule(
-                route.pattern,
-                route.endpoint,
-                view_func=lambda *args, **kw: route.handler(request, *args, **kw)
-            )
         return flask_app
 
     def create_application(self, *args, **kw):
