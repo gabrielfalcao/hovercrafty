@@ -41,7 +41,7 @@ Install
 Documentation
 -------------
 
-`hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_
+:strike:`hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_
 
 
 Basic Usage
@@ -61,10 +61,10 @@ Define Routes
    from collections import OrderedDict
    from hovercrafty import RouteServer
 
-   time_jsontest_com = RouteServer('time.jsontest.com', protocols=['http'])
+   time_jsontest = RouteServer('time.jsontest.com', protocols=['http'])
 
 
-   @time_jsontest_com.route('/')
+   @time_jsontest.route('/')
    def index_time_json(request):
        data = OrderedDict([
            ("time", "02:44:49 AM"),
@@ -90,7 +90,7 @@ Compatible with [hoverfly middleware]()
     from hovercrafty.codecs import JSONStreamCodec, UnicodeStreamCodec
 
     # in the body of your `middleware.py`
-    HoverflyBackend(time_jsontest_com).middleware(
+    HoverflyBackend(time_jsontest).middleware(
         source=sys.stdin,
         destination=sys.stdout,
         codecs=[JSONStreamCodec]
@@ -153,7 +153,7 @@ With Flask
    from hovercrafty.backends.wsgi import FlaskBackend
 
    httpbin_org = RouteServer('https://httpbin.org')
-   time_jsontest_com = RouteServer('http://time.jsontest.com')
+   time_jsontest = RouteServer('http://time.jsontest.com')
 
 
    backend = FlaskBackend(time_jsontest)
