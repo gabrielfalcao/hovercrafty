@@ -56,7 +56,6 @@ Define Routes
 .. code:: python
 
    import json
-   import sys
 
    from collections import OrderedDict
    from hovercrafty import RouteServer
@@ -86,8 +85,26 @@ Compatible with [hoverfly middleware]()
 
 .. code:: python
 
-    from hovercrafty.backends.hoverfly import HoverflyBackend
-    from hovercrafty.codecs import JSONStreamCodec, UnicodeStreamCodec
+
+   import json
+
+   from collections import OrderedDict
+   from hovercrafty.backends.hoverfly import HoverflyBackend
+   from hovercrafty.codecs import JSONStreamCodec, UnicodeStreamCodec
+   from hovercrafty import RouteServer
+
+   time_jsontest = RouteServer('time.jsontest.com', protocols=['http'])
+
+
+   @time_jsontest.route('/')
+   def index_time_json(request):
+       data = OrderedDict([
+           ("time", "02:44:49 AM"),
+           ("milliseconds_since_epoch", 1519094689265),
+           ("date", "02-20-2018"),
+       ])
+       return json.dumps(data)
+
 
     # in the body of your `middleware.py`
     HoverflyBackend(time_jsontest).middleware(
@@ -123,10 +140,34 @@ With Flask
 
    from flask import Flask
    from hovercrafty.backends.wsgi import FlaskBackend
+   from hovercrafty import RouteServer
+
+   time_jsontest = RouteServer('http://time.jsontest.com')
+
+
+   @time_jsontest.route('/')
+   def index_time_json(request):
+       data = OrderedDict([
+           ("time", "02:44:49 AM"),
+           ("milliseconds_since_epoch", 1519094689265),
+           ("date", "02-20-2018"),
+       ])
+       return json.dumps(data)
+
+
+   @time_jsontest.route('/')
+   def index_time_json(request):
+       data = OrderedDict([
+           ("time", "02:44:49 AM"),
+           ("milliseconds_since_epoch", 1519094689265),
+           ("date", "02-20-2018"),
+       ])
+       return json.dumps(data)
 
 
    backend = FlaskBackend(time_jsontest)
    app = Flask(__name__)
+
 
 
    backend.register_routes_into(app)
@@ -155,6 +196,15 @@ With Flask
    httpbin_org = RouteServer('https://httpbin.org')
    time_jsontest = RouteServer('http://time.jsontest.com')
 
+   @time_jsontest.route('/')
+   def index_time_json(request):
+       data = OrderedDict([
+           ("time", "02:44:49 AM"),
+           ("milliseconds_since_epoch", 1519094689265),
+           ("date", "02-20-2018"),
+       ])
+       return json.dumps(data)
+
 
    backend = FlaskBackend(time_jsontest)
    app = Flask(__name__)
@@ -162,7 +212,7 @@ With Flask
 
    @app.route('/httpbin/<path:path>')
    def namespace_httpbin_org(path):
-       backend.process_from_handler()
+       return backend.process_from_handler(request)
 
    app.run(port=8500)
 
