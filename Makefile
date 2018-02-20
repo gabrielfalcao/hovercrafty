@@ -4,7 +4,7 @@ unit:
 	nosetests tests/unit --rednose
 
 functional:
-	nosetests tests/functional --with-spec --spec-color
+	nosetests tests/functional --rednose
 
 html-docs:
 	cd docs && make html
