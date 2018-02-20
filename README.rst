@@ -41,7 +41,7 @@ Install
 Documentation
 -------------
 
-:strike:`hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_
+`:strike:hovercrafty.readthedocs.io <https://hovercrafty.readthedocs.io/en/latest/>`_
 
 
 Basic Usage
