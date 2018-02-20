@@ -1,5 +1,5 @@
 Hovercrafty
-=======
+===========
 
 Extensible Application DSL for Hoverfly, WSGI and any other backend
 
@@ -14,6 +14,10 @@ Extensible Application DSL for Hoverfly, WSGI and any other backend
    :target: https://gitter.im/newstore/hovercrafty?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
+What is Hovercrafty ?
+---------------------
+
+Hovercrafty is a python library that leverages a single API to define http request handlers, then run them as a hoverfly middleware, flask application or WSGI container
 
 Install
 -------
@@ -63,13 +67,19 @@ Define Routes
 With Hoverfly
 ^^^^^^^^^^^^^
 
+
+Middleware
+~~~~~~~~~~
+
+Compatible with [hoverfly middleware]()
+
 .. code:: python
 
-    from hovercrafty.backends.hoverfly import HoverflyMiddleware
+    from hovercrafty.backends.hoverfly import HoverflyBackend
     from hovercrafty.codecs import JSONStreamCodec, UnicodeStreamCodec
 
     # in the body of your `middleware.py`
-    HoverflyMiddleware(time_jsontest_com).run(
+    HoverflyBackend(time_jsontest_com).middleware(
         source=sys.stdin,
         destination=sys.stdout,
         codecs=[JSONStreamCodec]
@@ -146,10 +156,10 @@ With Flask
    app.run(port=8500)
 
 
-As WSGI server
-^^^^^^^^^^^^^^
+As WSGI Container
+^^^^^^^^^^^^^^^^^
 
-**Compatible with any WSGI-compatible application (e.g.: werkzeug, Django, ...)**
+**Compatible with any WSGI-compatible application container (e.g.: werkzeug, Django, ...)**
 
 .. code:: python
 

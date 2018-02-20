@@ -2,9 +2,9 @@
 import re
 from collections import OrderedDict
 from .exceptions import RouteAlreadyDefined
-from utils import parse_destination
-from utils import parse_query_string_ordered
-from utils import unique_ordered_tuple
+from .utils import parse_destination
+from .utils import parse_query_string_ordered
+from .utils import unique_ordered_tuple
 
 PROTOCOL_HOSTNAME_ROUTES_SERVERS = OrderedDict()  # e.g.: "http://hostname.com"  # no trailing slash
 HOSTNAME_ONLY_ROUTES_SERVERS = OrderedDict()  # e.g.: "hostname.com"

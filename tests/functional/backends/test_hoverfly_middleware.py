@@ -6,7 +6,7 @@ import sys
 from collections import OrderedDict
 from hovercrafty import RouteServer
 
-from hovercrafty.backends.hoverfly import HoverflyMiddleware
+from hovercrafty.backends.hoverfly import HoverflyBackend
 from hovercrafty.codecs import JSONStreamCodec
 from hovercrafty.codecs import UnicodeStreamCodec
 
@@ -26,7 +26,7 @@ def index_synthesize_time_json(request):
 
 
 def test_hoverfly_synthesize():
-    "HoverflyMiddleware(server).run() should source from a file-like object"
+    "HoverflyBackend(server).middleware() should source from a file-like object"
     input_stream = io.BytesIO()
     output_stream = io.BytesIO()
 
@@ -39,7 +39,7 @@ def test_hoverfly_synthesize():
     ))
     input_stream.seek(0)
 
-    HoverflyMiddleware(time_jsontest_synthesize).run(
+    HoverflyBackend(time_jsontest_synthesize).middleware(
         source=input_stream,
         destination=output_stream,
         codecs=[JSONStreamCodec, UnicodeStreamCodec]
